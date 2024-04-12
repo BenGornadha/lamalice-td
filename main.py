@@ -1,5 +1,6 @@
-import pygame
 import sys
+
+import pygame
 
 from chemin import Chemin
 from ennemi import Ennemi

@@ -1,37 +1,14 @@
 from __future__ import annotations
+
 import pygame
-from pygame import Surface
 
 from chemin import Chemin
 from ennemi import Ennemi
+from image_repository import ImageRepository
 from tour import Tour
+from window import Window
 
 pygame.init()
-
-
-class ImageRepository:
-
-    def __init__(self, for_window: Window):
-        self._window = for_window
-        self._images = {}
-
-    def register_background(self):
-        background_image = pygame.image.load("./images/background.png")
-        self._images["background"] = pygame.transform.scale(background_image, (self._window.width, self._window.height))
-
-    def register_tour(self):
-        tower_image = pygame.image.load(
-            'images/tour.png').convert_alpha()  # convert_alpha() est utilisé pour respecter la transparence
-        self._images["tower"] = pygame.transform.scale(tower_image, (40, 60))
-
-    def image(self, name: str) -> Surface:
-        return self._images[name]
-
-
-class Window:
-    def __init__(self, width=800, height=600):
-        self.width = width
-        self.height = height
 
 
 class App:
@@ -48,7 +25,7 @@ class App:
 
     def load_images(self):
         self._image_loader.register_background()
-        self._image_loader.register_tour()
+        self._image_loader.register_tower()
 
     def run(self) -> None:
         self._running = True
