@@ -3,7 +3,7 @@ from __future__ import annotations
 import pygame
 
 from chemin import Chemin
-from ennemi import Ennemi
+from goblin import Goblin
 from image_repository import ImageRepository
 from tour import Tour
 from window import Window
@@ -22,7 +22,7 @@ class App:
         self._load_images()
         self.path = Chemin()
         self.arrow_tower = Tour(position=(50, 205), portee=300, degats=1, weapon=self._image_loader.image("arrow"))
-        self.mob = Ennemi(chemin=self.path.get_path_points(), vitesse=1, sante=100)
+        self.goblin = Goblin(chemin=self.path.get_path_points(), vitesse=1, sante=2)
 
     def _load_images(self) -> None:
         self._image_loader.register_surfaces()
@@ -37,8 +37,9 @@ class App:
             self.tick(current_time)
 
     def tick(self, current_time: int) -> None:
-        self.mob.deplacer()
-        self.arrow_tower.attaquer(current_time=current_time, ennemi=self.mob)
+        if self.goblin.is_alive():
+            self.goblin.deplacer()
+            self.arrow_tower.attaquer(current_time=current_time, ennemi=self.goblin)
 
         self._draw()
         # Mettre à jour l'affichage
@@ -48,7 +49,8 @@ class App:
     def _draw(self) -> None:
         self.screen.blit(self._image_loader.surface("background"), (0, 0))
         self.screen.blit(self._image_loader.surface("tower"), self.arrow_tower.position)
-        pygame.draw.circle(self.screen, (255, 0, 0), self.mob.position, 10)
+        if self.goblin.is_alive():
+            self.screen.blit(self._image_loader.surface("mob"),self.goblin.position)
+        # pygame.draw.circle(self.screen, (255, 0, 0), self.goblin.position, 10)
         if self.arrow_tower.arrow_pos is not None:
             self.screen.blit(self._image_loader.surface("arrow"), self.arrow_tower.arrow_pos)
-            print(self.arrow_tower.arrow_pos)

@@ -3,7 +3,7 @@ import sys
 import pygame
 
 from chemin import Chemin
-from ennemi import Ennemi
+from goblin import Goblin
 from tour import Tour
 
 # Initialisation de Pygame
@@ -26,7 +26,7 @@ chemin = Chemin()
 tour = Tour(position=(50,205),portee=20,degats=1)
 # enemy_position = chemin.get_path_points()[0]
 # enemy_index = 0
-mob = Ennemi(chemin=chemin.get_path_points(), vitesse=1, sante=100)
+mob = Goblin(chemin=chemin.get_path_points(), vitesse=1, sante=100)
 # Boucle de jeu
 running = True
 while running:

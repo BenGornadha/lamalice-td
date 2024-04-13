@@ -14,6 +14,7 @@ class ImageRepository:
         self._rects = {}
 
     def register_surfaces(self):
+        self._register_mob()
         self._register_background()
         self._register_tower()
         self._register_arrow()
@@ -41,3 +42,7 @@ class ImageRepository:
 
     def _register_arrow_image(self, arrow_image: Surface):
         self._rects["arrow"] = arrow_image.get_rect()
+
+    def _register_mob(self):
+        mob_image = pygame.image.load("./images/goblin.png")
+        self._surfaces["mob"] = pygame.transform.scale(mob_image, (20, 25))

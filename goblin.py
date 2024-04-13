@@ -1,29 +1,19 @@
-class Ennemi:
+class Goblin:
     def __init__(self, chemin, vitesse=1, sante=100):
-        """
-        Initialise un nouvel ennemi.
-
-        :param chemin: Une liste de tuples représentant les points du chemin que l'ennemi suivra.
-        :param vitesse: La vitesse à laquelle l'ennemi se déplace le long du chemin.
-        :param sante: La santé initiale de l'ennemi.
-        """
         self._chemin = chemin
         self._vitesse = vitesse
         self._sante = sante
-        self._position_index = 0  # Indice du point actuel sur le chemin
-        self._position = chemin[0]  # Position initiale de l'ennemi
+        self._position_index = 0
+        self._position = chemin[0]
+
+    def is_alive(self) -> bool:
+        return self._sante > 0
 
     @property
     def position(self) -> tuple:
         return self._position
 
     def deplacer(self):
-        """
-        Déplace l'ennemi le long du chemin.
-        """
-        # Incrémente l'index de position à la vitesse de l'ennemi.
-        # Assure-toi de ne pas dépasser la longueur du chemin.
-        # Vérifie si l'ennemi a atteint ou dépassé la fin du chemin
         self._position_index += self._vitesse
         if self._position_index >= len(self._chemin):
             self._position_index = 0  # Remet l'ennemi au début du chemin
@@ -44,4 +34,4 @@ class Ennemi:
         """
         Gère la mort de l'ennemi.
         """
-        print("L'ennemi est mort!")
+        self._position = None
