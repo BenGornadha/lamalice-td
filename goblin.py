@@ -35,3 +35,4 @@ class Goblin:
         Gère la mort de l'ennemi.
         """
         self._position = None
+
