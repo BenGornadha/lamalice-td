@@ -7,13 +7,13 @@ def generer_chemin_vertical(x, y_debut, y_fin, pas):
 
 
 # Exemple d'utilisation :
-FIRST_PATH = generer_chemin_horizontal(325, 0, 130, 10)
-SECOND_PATH = generer_chemin_vertical(130, 325, 145, -10)
-THIRD_PATH = generer_chemin_horizontal(145, 130, 295, 10)
-FOURTH_PATH = generer_chemin_vertical(295, 145, 395, 10)
-FIFTH_PATH = generer_chemin_horizontal(395, 295, 505, 10)
-SIX_PATH = generer_chemin_vertical(505, 395, 275, -10)
-SEVENTH_PATH = generer_chemin_horizontal(275, 505, 800, 10)
+FIRST_PATH = generer_chemin_horizontal(325, 0, 130, 1)
+SECOND_PATH = generer_chemin_vertical(130, 325, 145, -1)
+THIRD_PATH = generer_chemin_horizontal(145, 130, 295, 1)
+FOURTH_PATH = generer_chemin_vertical(295, 145, 395, 1)
+FIFTH_PATH = generer_chemin_horizontal(395, 295, 505, 1)
+SIX_PATH = generer_chemin_vertical(505, 395, 275, -1)
+SEVENTH_PATH = generer_chemin_horizontal(275, 505, 800, 1)
 
 
 

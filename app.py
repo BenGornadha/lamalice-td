@@ -24,7 +24,7 @@ class App:
         self.arrow_tower = Tour(position=(50, 205), portee=300, degats=1, weapon=self._image_loader.image("arrow"))
         self.mob = Ennemi(chemin=self.path.get_path_points(), vitesse=1, sante=100)
 
-    def _load_images(self):
+    def _load_images(self) -> None:
         self._image_loader.register_surfaces()
 
     def run(self) -> None:
@@ -43,9 +43,9 @@ class App:
         self._draw()
         # Mettre à jour l'affichage
         pygame.display.flip()
-        pygame.time.wait(500)
+        pygame.time.wait(10)
 
-    def _draw(self):
+    def _draw(self) -> None:
         self.screen.blit(self._image_loader.surface("background"), (0, 0))
         self.screen.blit(self._image_loader.surface("tower"), self.arrow_tower.position)
         pygame.draw.circle(self.screen, (255, 0, 0), self.mob.position, 10)
