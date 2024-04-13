@@ -41,7 +41,7 @@ class App:
 
     def tick(self, current_time: int) -> None:
         self.goblins.move()
-        self.arrow_tower.attaquer2(current_time=current_time,ennemis=self.goblins.goblins)
+        self.arrow_tower.attaquer(current_time=current_time, ennemis=self.goblins.goblins)
         # if self.goblin.is_alive():
         #     self.goblin.deplacer()
         #     self.arrow_tower.attaquer(current_time=current_time, ennemi=self.goblin)

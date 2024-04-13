@@ -26,7 +26,7 @@ class Tour:
         self.current_ennemi = Goblin(chemin=Chemin().get_path_points(), vitesse=0, sante=0)
 
     @property
-    def position(self):
+    def position(self) -> tuple:
         return self._position
 
     def _compute_distance_for(self, position: tuple) -> int:
@@ -44,21 +44,14 @@ class Tour:
         if ennemis_a_portee:
             return min(ennemis_a_portee, key=lambda ennemi: distance(ennemi.position, sortie))
 
-    def attaquer2(self, current_time: int, ennemis: List[Goblin]):
+    def attaquer(self, current_time: int, ennemis: List[Goblin]) -> None:
         self._current_arrow(current_time)
+        if not self._can_attack(current_time=current_time):
+            return
         target = self.trouver_ennemi_le_plus_proche_de_la_sortie(ennemis=ennemis)
-        if target and target.is_alive() and not self._ennemi_a_portee(ennemi=target):
+        if not target:
             return
-        if target and self._reload(current_time=current_time):
-            self._launch_new_arrow(current_time=current_time, to=target)
-
-    def attaquer(self, current_time: int, ennemi: Goblin):
-        self._current_arrow(current_time, ennemi)
-
-        if ennemi.is_alive() and not self._ennemi_a_portee(ennemi=ennemi):
-            return
-        if self._reload(current_time=current_time):
-            self._launch_new_arrow(current_time=current_time, to=ennemi)
+        self._launch_new_arrow(current_time=current_time, to=target)
 
     def _current_arrow(self, current_time: int):
         if self._arrow_already_launched():
@@ -85,7 +78,7 @@ class Tour:
     def _arrow_already_launched(self):
         return self.arrow_pos is not None
 
-    def _reload(self, current_time: int) -> bool:
+    def _can_attack(self, current_time: int) -> bool:
         return current_time - self.last_attack_time > self.attack_cooldown
 
     def _launch_new_arrow(self, current_time: int, to: Goblin):
