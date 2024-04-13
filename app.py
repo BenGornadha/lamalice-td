@@ -22,7 +22,7 @@ class App:
         self._load_images()
         self.path = Chemin()
         self.arrow_tower = Tour(position=(50, 205), portee=300, degats=1, weapon=self._image_loader.image("arrow"))
-        self.goblin = Goblin(chemin=self.path.get_path_points(), vitesse=1, sante=2)
+        self.goblin = Goblin(chemin=self.path.get_path_points(), vitesse=1, sante=5)
 
     def _load_images(self) -> None:
         self._image_loader.register_surfaces()
