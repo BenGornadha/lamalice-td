@@ -1,8 +1,8 @@
 from typing import List
 
-from arrow import Arrow
-from building import Building
-from goblin import Goblin
+from attacks.arrow import Arrow
+from buildings.building import Building
+from mobs.goblin import Goblin
 
 
 class Tour(Building):

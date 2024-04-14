@@ -3,7 +3,7 @@ from __future__ import annotations
 import pygame
 from pygame import Surface, Rect
 
-from window import Window
+from interface.window import Window
 
 
 class ImageRepository:
@@ -32,8 +32,7 @@ class ImageRepository:
                                                               (self._window.width, self._window.height))
 
     def _register_tower(self) -> None:
-        tower_image = pygame.image.load(
-            'images/tour.png').convert_alpha()  # convert_alpha() est utilisé pour respecter la transparence
+        tower_image = pygame.image.load('./images/tour.png').convert_alpha()
         self._surfaces["tower"] = pygame.transform.scale(tower_image, (40, 60))
 
     def _register_arrow(self):

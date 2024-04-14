@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import pygame
 
-from chemin import Chemin
-from goblins import Goblins
-from image_repository import ImageRepository
-from tour import Tour
-from window import Window
+from paths.chemin import Chemin
+from mobs.goblins import Goblins
+from interface.image_repository import ImageRepository
+from buildings.tour import Tour
+from interface.window import Window
 
 pygame.init()
 

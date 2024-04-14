@@ -2,7 +2,7 @@ from typing import List
 
 import pygame
 
-from goblin import Goblin
+from mobs.goblin import Goblin
 
 
 class Arrow:

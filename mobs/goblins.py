@@ -1,5 +1,5 @@
-from chemin import Chemin
-from goblin import Goblin
+from mobs.goblin import Goblin
+from paths.chemin import Chemin
 
 
 class Goblins:
