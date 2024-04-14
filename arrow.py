@@ -44,4 +44,4 @@ class Arrow:
         self._position[1] += direction.y * self._speed * (current_pygame_time - last_attack_time) / 1000.0
 
     def has_reach_mob(self) -> bool:
-        return pygame.math.Vector2(self.position).distance_to(self._target.position) < 10
+        return pygame.math.Vector2(self.position).distance_to(self._target.position) < 20

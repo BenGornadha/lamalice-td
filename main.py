@@ -23,7 +23,7 @@ tower_image = pygame.transform.scale(tower_image, (40, 60))
 
 
 chemin = Chemin()
-tour = Tour(position=(50,205),portee=20,degats=1)
+tour = Tour(position=(50,205), range=20, damage=1)
 # enemy_position = chemin.get_path_points()[0]
 # enemy_index = 0
 mob = Goblin(chemin=chemin.get_path_points(), vitesse=1, sante=100)

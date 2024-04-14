@@ -12,6 +12,7 @@ class ImageRepository:
         self._window = for_window
         self._surfaces = {}
         self._rects = {}
+        self.register_surfaces()
 
     def register_surfaces(self):
         self._register_mob()
