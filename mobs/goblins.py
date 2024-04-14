@@ -11,8 +11,8 @@ class Goblins:
     def goblins(self):
         return self._goblins
 
-    def create_goblin(self) -> None:
-        self._goblins.append(Goblin(chemin=Chemin().get_path_points(),vitesse=1,sante=3))
+    def create_goblin(self, vitesse=1, sante=3) -> None:
+        self._goblins.append(Goblin(chemin=Chemin().get_path_points(), vitesse=vitesse, sante=sante))
 
     def move(self):
         for goblin in self._goblins:
