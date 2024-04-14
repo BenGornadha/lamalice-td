@@ -8,8 +8,8 @@ from interface.window import Window
 
 class ImageRepository:
 
-    def __init__(self, for_window: Window) -> None:
-        self._window = for_window
+    def __init__(self, width:int,height:int) -> None:
+        self._window = (width,height)
         self._surfaces = {}
         self._rects = {}
         self.register_surfaces()
@@ -29,7 +29,7 @@ class ImageRepository:
     def _register_background(self) -> None:
         background_image = pygame.image.load("./images/background.png")
         self._surfaces["background"] = pygame.transform.scale(background_image,
-                                                              (self._window.width, self._window.height))
+                                                              self._window)
 
     def _register_tower(self) -> None:
         tower_image = pygame.image.load('./images/tour.png').convert_alpha()
