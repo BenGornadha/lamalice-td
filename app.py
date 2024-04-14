@@ -35,13 +35,11 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
-            # if current_time % 500 == 0:
-            #     self.goblins.create_goblin()
             self.tick(current_time)
 
     def tick(self, current_time: int) -> None:
         self.goblins.move()
-        self.arrow_tower.attaquer(current_time=current_time, ennemis=self.goblins.goblins)
+        self.arrow_tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
         # if self.goblin.is_alive():
         #     self.goblin.deplacer()
         #     self.arrow_tower.attaquer(current_time=current_time, ennemi=self.goblin)
@@ -57,6 +55,5 @@ class App:
         for goblin in self.goblins.goblins:
             if goblin.is_alive():
                 self.screen.blit(self._image_loader.surface("mob"), goblin.position)
-        # pygame.draw.circle(self.screen, (255, 0, 0), self.goblin.position, 10)
-        if self.arrow_tower.arrow_pos is not None:
-            self.screen.blit(self._image_loader.surface("arrow"), self.arrow_tower.arrow_pos)
+        if self.arrow_tower.arrow.position is not None:
+            self.screen.blit(self._image_loader.surface("arrow"), self.arrow_tower.arrow.position)

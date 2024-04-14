@@ -1,5 +1,5 @@
 class Goblin:
-    def __init__(self, chemin, vitesse=1, sante=100):
+    def __init__(self, chemin, vitesse=1, sante=2):
         self._chemin = chemin
         self._vitesse = vitesse
         self._sante = sante
@@ -8,6 +8,9 @@ class Goblin:
 
     def is_alive(self) -> bool:
         return self._sante > 0
+
+    def is_dead(self):
+        return self._sante <= 0
 
     @property
     def position(self) -> tuple:
@@ -21,18 +24,10 @@ class Goblin:
         self._position = self._chemin[self._position_index]
 
     def subir_degats(self, degats):
-        """
-        Applique des dégâts à l'ennemi.
-
-        :param degats: La quantité de dégâts infligés à l'ennemi.
-        """
         self._sante -= degats
         if self._sante <= 0:
             self.mourir()
 
     def mourir(self):
-        """
-        Gère la mort de l'ennemi.
-        """
         self._position = None
 
