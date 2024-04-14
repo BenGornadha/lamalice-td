@@ -27,8 +27,8 @@ class App:
         self.path = Chemin()
         self.arrow_tower = Tour(position=(50, 205), range=300, damage=1)
         self.goblins = Goblins()
-        self._waves = [Wave(goblin_factory=self.goblins,enemy_hp=2,num_enemies=3),
-                       Wave(goblin_factory=self.goblins,enemy_hp=3,num_enemies=4)]
+        self._waves = [Wave(goblin_factory=self.goblins,enemy_hp=2,num_enemies=10),
+                       Wave(goblin_factory=self.goblins,enemy_hp=3,num_enemies=15)]
         self._current_wave_index = 0
 
     def display_wave_info(self, wave_number):
@@ -64,20 +64,17 @@ class App:
             if not wave_announcement_shown:
                 wave_announcement_time = current_time
                 wave_announcement_shown = True
-            # if current_time - last_mob_pop > 1000:
-            #     self.goblins.create_goblin()
-            #     last_mob_pop = current_time
-            self.tick(current_time, wave_announcement_time, current_time - wave_announcement_time < 2000)
+            self.tick(current_time, current_time - wave_announcement_time < 2000)
 
-    def tick(self, current_time: int,wave_announcement_time, show_wave_announcement) -> None:
+    def tick(self, current_time: int, show_wave_announcement) -> None:
         self.goblins.move()
         self.arrow_tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
 
-        self._draw(show_wave_announcement)
+        self._draw(show_wave_announcement=show_wave_announcement)
         pygame.display.flip()
         pygame.time.wait(10)
 
-    def _draw(self,show_wave_announcement) -> None:
+    def _draw(self,show_wave_announcement : bool) -> None:
         self.screen.blit(self._image_loader.surface("background"), (0, 0))
         self.screen.blit(self._image_loader.surface("tower"), self.arrow_tower.position)
         self.display_wave_info(self._current_wave_index)
