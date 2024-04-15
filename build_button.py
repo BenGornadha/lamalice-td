@@ -24,3 +24,12 @@ class Button:
             if self.rect.collidepoint(event.pos):
                 return True
         return False
+
+class ArrowTowerButton(Button):
+    def __init__(self, screen, position, dimensions, font, on_click):
+        super().__init__(screen, label="Arrow Tower", position=position, dimensions=dimensions, font=font)
+        self.on_click = on_click  # Callback pour gérer le clic sur le bouton
+
+    def click(self, *args, **kwargs):
+        """ Déclenche l'action associée au bouton """
+        self.on_click(*args, **kwargs)  # Appelle la fonction callback avec des arguments supplémentaires si nécessaire

@@ -5,7 +5,7 @@ from typing import Tuple
 
 import pygame
 
-from build_button import Button
+from build_button import Button, ArrowTowerButton
 from draw.draw import Drawer
 from paths.chemin import Chemin
 from mobs.goblins import Goblins
@@ -42,6 +42,18 @@ class App:
             dimensions=(100, 40),
             font=self.font
         )
+        self.arrow_tower_button = ArrowTowerButton(
+            screen=self.screen,
+            position=((width - 200) / 2, height - 100),
+            dimensions=(200, 40),
+            font=self.font,
+            on_click=self.activate_build_mode
+        )
+        self.show_build_menu = False
+
+    def activate_build_mode(self):
+        """ Active le mode de placement de la tour. """
+        self.build_mode = True
 
     def run(self) -> None:
         self._running = True
@@ -50,10 +62,14 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
-                if self.build_button.is_clicked(event):
-                    self.game_started = True
-                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
-                    if not self.game_started:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if self.build_button.is_clicked(event):
+                        # self.game_started = True
+                        self.show_build_menu = not self.show_build_menu  # Affiche ou masque le menu
+                    elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
+                        self.arrow_tower_button.click()  # Utilise la méthode click du bouton
+                        # self.build_mode = True  # Active le mode de construction
+                    elif not self.game_started:
                         self.build_tour_at(pygame.mouse.get_pos())
                         self.game_started = True  # Commence le jeu après avoir placé une tour
 
@@ -70,6 +86,8 @@ class App:
                 self._drawer.draw(goblins=self.goblins.goblins, towers=self.arrow_towers)
                 self._announcer.display_wave_info(self._current_wave_index)
             self.build_button.draw()
+            if self.show_build_menu:
+                self.arrow_tower_button.draw()
 
             pygame.display.flip()
 
