@@ -50,6 +50,7 @@ class App:
             on_click=self.activate_build_mode
         )
         self.show_build_menu = False
+        self.show_preview_tower = False
 
     def activate_build_mode(self):
         """ Active le mode de placement de la tour. """
@@ -64,18 +65,18 @@ class App:
                     self._running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if self.build_button.is_clicked(event):
-                        # self.game_started = True
                         self.show_build_menu = not self.show_build_menu  # Affiche ou masque le menu
                     elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
                         self.arrow_tower_button.click()  # Utilise la méthode click du bouton
-                        # self.build_mode = True  # Active le mode de construction
-                    elif not self.game_started:
+                        self.show_preview_tower = True
+                    elif not self.game_started and self.show_preview_tower:
                         self.build_tour_at(pygame.mouse.get_pos())
-                        self.game_started = True  # Commence le jeu après avoir placé une tour
+                        self.game_started = True
 
             if not self.game_started:
                 self._drawer.draw_background()
-                self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+                if self.show_preview_tower:
+                    self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
             else:
                 current_wave = self._waves[self._current_wave_index]
                 self._handle_wave(current_time, current_wave)
