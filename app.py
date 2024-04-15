@@ -6,7 +6,6 @@ from paths.chemin import Chemin
 from mobs.goblins import Goblins
 from interface.image_repository import ImageRepository
 from buildings.tour import Tour
-from interface.window import Window
 from wave import Wave
 from wave_announcer import WaveAnnouncer
 
@@ -21,19 +20,17 @@ class App:
         pygame.display.set_caption("Tower Defense LaMalice")
         pygame.font.init()
 
-
         self._image_loader = ImageRepository(width, height)
         self.path = Chemin()
         self.arrow_tower = Tour(position=(50, 205), range=300, damage=1)
         self.goblins = Goblins()
-        self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=10),
-                       Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=15)]
+        self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
+                       Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._current_wave_index = 0
         self.announcer = WaveAnnouncer(self.screen)
 
     def run(self) -> None:
         self._running = True
-        wave_announcement_shown = False  # Pour contrôler l'affichage de l'annonce
         while self._running:
             current_time = pygame.time.get_ticks()
 
@@ -43,25 +40,28 @@ class App:
 
             current_wave = self._waves[self._current_wave_index]
 
-            if not current_wave.all_enemies_spawned():
-                current_wave.spawn_enemies(current_time)
-            elif current_wave.all_enemies_defeated():
-                self._next_wave()
+            self._handle_wave(current_time, current_wave)
 
             show_wave_announcement = self.announcer.update_announcement(self._current_wave_index, current_time)
 
-            self.tick(current_time, show_wave_announcement)
+            self._tick(current_time=current_time)
+            self._draw(show_wave_announcement=show_wave_announcement)
+
+    def _handle_wave(self, current_time: int, current_wave: Wave) -> None:
+        if not current_wave.all_enemies_spawned():
+            current_wave.spawn_enemies(current_time)
+        elif current_wave.all_enemies_defeated():
+            self._next_wave()
 
     def _next_wave(self) -> None:
         if self._current_wave_index + 1 < len(self._waves):
             self._current_wave_index += 1
             self.announcer.reset()
 
-    def tick(self, current_time: int, show_wave_announcement : bool) -> None:
+    def _tick(self, current_time: int) -> None:
         self.goblins.move()
         self.arrow_tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
 
-        self._draw(show_wave_announcement=show_wave_announcement)
         pygame.display.flip()
         pygame.time.wait(10)
 
