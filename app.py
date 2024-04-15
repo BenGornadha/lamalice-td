@@ -18,7 +18,6 @@ class App:
         self._running = False
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("Tower Defense LaMalice")
-        pygame.font.init()
 
         self._image_loader = ImageRepository(width, height)
         self.path = Chemin()
@@ -27,7 +26,7 @@ class App:
         self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
                        Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._current_wave_index = 0
-        self.announcer = WaveAnnouncer(self.screen)
+        self._announcer = WaveAnnouncer(self.screen)
 
     def run(self) -> None:
         self._running = True
@@ -42,7 +41,7 @@ class App:
 
             self._handle_wave(current_time, current_wave)
 
-            show_wave_announcement = self.announcer.update_announcement(self._current_wave_index, current_time)
+            show_wave_announcement = self._announcer.update_announcement(self._current_wave_index, current_time)
 
             self._tick(current_time=current_time)
             self._draw(show_wave_announcement=show_wave_announcement)
@@ -56,7 +55,7 @@ class App:
     def _next_wave(self) -> None:
         if self._current_wave_index + 1 < len(self._waves):
             self._current_wave_index += 1
-            self.announcer.reset()
+            self._announcer.reset()
 
     def _tick(self, current_time: int) -> None:
         self.goblins.move()
@@ -73,6 +72,6 @@ class App:
                 self.screen.blit(self._image_loader.surface("mob"), goblin.position)
         if self.arrow_tower.arrow.position is not None:
             self.screen.blit(self._image_loader.surface("arrow"), self.arrow_tower.arrow.position)
-        self.announcer.display_wave_info(self._current_wave_index)
+        self._announcer.display_wave_info(self._current_wave_index)
         if show_wave_announcement:
-            self.announcer.display_wave_announcement(self._current_wave_index)
+            self._announcer.display_wave_announcement(self._current_wave_index)
