@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from typing import Tuple
+
 import pygame
 
+from draw.draw import Drawer
 from paths.chemin import Chemin
 from mobs.goblins import Goblins
 from interface.image_repository import ImageRepository
@@ -18,16 +21,16 @@ class App:
         self._running = False
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("Tower Defense LaMalice")
+        self._drawer = Drawer(screen=self.screen, image_repository=ImageRepository(width, height))
 
-        self._image_loader = ImageRepository(width, height)
         self.path = Chemin()
-        self.arrow_towers = [] #Tour(position=(50, 205), range=300, damage=1)
+        self.arrow_towers = []
         self.goblins = Goblins()
         self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
                        Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._current_wave_index = 0
-        self._announcer = WaveAnnouncer(self.screen)
         self.game_started = False
+        self._announcer = WaveAnnouncer(screen=self.screen)
 
     def run(self) -> None:
         self._running = True
@@ -38,24 +41,22 @@ class App:
                     self._running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
                     if not self.game_started:
-                        self.position_tower(pygame.mouse.get_pos())
+                        self.build_tour_at(pygame.mouse.get_pos())
                         self.game_started = True  # Commence le jeu après avoir placé une tour
 
-            if self.game_started:  # Gère les vagues seulement si le jeu a commencé
+            if not self.game_started:
+                self._drawer.draw_background()
+                self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+                pygame.display.flip()
+            else:
                 current_wave = self._waves[self._current_wave_index]
                 self._handle_wave(current_time, current_wave)
                 show_wave_announcement = self._announcer.update_announcement(self._current_wave_index, current_time)
                 self._tick(current_time=current_time)
-                self._draw(show_wave_announcement=show_wave_announcement)
-            else:
-                self._draw(show_wave_announcement=False)
-                self._draw_preview_tower(pygame.mouse.get_pos())
-                pygame.display.flip()
-
-
-
-    def _draw_preview_tower(self, mouse_position):
-        self.screen.blit(self._image_loader.surface("preview_tower"), mouse_position)
+                if show_wave_announcement:
+                    self._announcer.display_wave_announcement(self._current_wave_index)
+                self._drawer.draw(goblins=self.goblins.goblins, towers=self.arrow_towers)
+                self._announcer.display_wave_info(self._current_wave_index)
 
     def _handle_wave(self, current_time: int, current_wave: Wave) -> None:
         if not current_wave.all_enemies_spawned():
@@ -68,10 +69,9 @@ class App:
             self._current_wave_index += 1
             self._announcer.reset()
 
-    def position_tower(self, position):
-        # Ajoute ou déplace une tour à la position cliquée
+    def build_tour_at(self, position: Tuple[int, int]) -> None:
         new_tower = Tour(position=position, range=300, damage=1)
-        self.arrow_towers.append(new_tower)  # Ajoute la nouvelle tour à la liste des tours
+        self.arrow_towers.append(new_tower)
 
     def _tick(self, current_time: int) -> None:
         self.goblins.move()
@@ -81,18 +81,3 @@ class App:
         pygame.display.flip()
         pygame.time.wait(10)
 
-    def _draw(self, show_wave_announcement: bool) -> None:
-        self.screen.blit(self._image_loader.surface("background"), (0, 0))
-        if not self.game_started:
-            self._draw_preview_tower(pygame.mouse.get_pos())
-        for tower in self.arrow_towers:  # Dessine chaque tour
-            self.screen.blit(self._image_loader.surface("tower"), tower.position)
-            if tower.arrow.position is not None:
-                self.screen.blit(self._image_loader.surface("arrow"), tower.arrow.position)
-        for goblin in self.goblins.goblins:
-            if goblin.is_alive():
-                self.screen.blit(self._image_loader.surface("mob"), goblin.position)
-                self.screen.blit(self._image_loader.surface("mob"), goblin.position)
-        self._announcer.display_wave_info(self._current_wave_index)
-        if show_wave_announcement:
-            self._announcer.display_wave_announcement(self._current_wave_index)
