@@ -27,25 +27,35 @@ class App:
                        Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._current_wave_index = 0
         self._announcer = WaveAnnouncer(self.screen)
+        self.game_started = False
 
     def run(self) -> None:
         self._running = True
         while self._running:
             current_time = pygame.time.get_ticks()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
-                    self.position_tower(pygame.mouse.get_pos())
-            current_wave = self._waves[self._current_wave_index]
+                    if not self.game_started:
+                        self.position_tower(pygame.mouse.get_pos())
+                        self.game_started = True  # Commence le jeu après avoir placé une tour
 
-            self._handle_wave(current_time, current_wave)
+            if self.game_started:  # Gère les vagues seulement si le jeu a commencé
+                current_wave = self._waves[self._current_wave_index]
+                self._handle_wave(current_time, current_wave)
+                show_wave_announcement = self._announcer.update_announcement(self._current_wave_index, current_time)
+                self._tick(current_time=current_time)
+                self._draw(show_wave_announcement=show_wave_announcement)
+            else:
+                self._draw(show_wave_announcement=False)
+                self._draw_preview_tower(pygame.mouse.get_pos())
+                pygame.display.flip()
 
-            show_wave_announcement = self._announcer.update_announcement(self._current_wave_index, current_time)
 
-            self._tick(current_time=current_time)
-            self._draw(show_wave_announcement=show_wave_announcement)
+
+    def _draw_preview_tower(self, mouse_position):
+        self.screen.blit(self._image_loader.surface("preview_tower"), mouse_position)
 
     def _handle_wave(self, current_time: int, current_wave: Wave) -> None:
         if not current_wave.all_enemies_spawned():
@@ -73,6 +83,8 @@ class App:
 
     def _draw(self, show_wave_announcement: bool) -> None:
         self.screen.blit(self._image_loader.surface("background"), (0, 0))
+        if not self.game_started:
+            self._draw_preview_tower(pygame.mouse.get_pos())
         for tower in self.arrow_towers:  # Dessine chaque tour
             self.screen.blit(self._image_loader.surface("tower"), tower.position)
             if tower.arrow.position is not None:

@@ -19,6 +19,7 @@ class ImageRepository:
         self._register_background()
         self._register_tower()
         self._register_arrow()
+        self._register_preview_tower()
 
     def surface(self, name: str) -> Surface:
         return self._surfaces[name]
@@ -34,6 +35,12 @@ class ImageRepository:
     def _register_tower(self) -> None:
         tower_image = pygame.image.load('./images/tour.png').convert_alpha()
         self._surfaces["tower"] = pygame.transform.scale(tower_image, (40, 60))
+
+    def _register_preview_tower(self) -> None:
+        tower_preview_image = pygame.image.load('./images/tour.png').convert_alpha()
+        tower_preview_image = pygame.transform.scale(tower_preview_image, (40, 60))
+        tower_preview_image.set_alpha(128)
+        self._surfaces["preview_tower"] = pygame.transform.scale(tower_preview_image, (40, 60))
 
     def _register_arrow(self):
         arrow_surface = pygame.image.load('./images/arrow.png').convert_alpha()
