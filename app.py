@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import dataclasses
 from typing import Tuple
 
 import pygame
 
+from build_button import Button
 from draw.draw import Drawer
 from paths.chemin import Chemin
 from mobs.goblins import Goblins
@@ -15,6 +17,7 @@ from wave_announcer import WaveAnnouncer
 pygame.init()
 
 
+
 class App:
 
     def __init__(self, width=800, height=600):
@@ -22,6 +25,7 @@ class App:
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("Tower Defense LaMalice")
         self._drawer = Drawer(screen=self.screen, image_repository=ImageRepository(width, height))
+        self.font = pygame.font.SysFont('Arial', 24)
 
         self.path = Chemin()
         self.arrow_towers = []
@@ -31,6 +35,13 @@ class App:
         self._current_wave_index = 0
         self.game_started = False
         self._announcer = WaveAnnouncer(screen=self.screen)
+        self.build_button = Button(
+            screen=self.screen,
+            label='Build',
+            position=((width - 100) / 2, height - 50),
+            dimensions=(100, 40),
+            font=self.font
+        )
 
     def run(self) -> None:
         self._running = True
@@ -39,6 +50,8 @@ class App:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
+                if self.build_button.is_clicked(event):
+                    self.game_started = True
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Clic gauche
                     if not self.game_started:
                         self.build_tour_at(pygame.mouse.get_pos())
@@ -47,7 +60,6 @@ class App:
             if not self.game_started:
                 self._drawer.draw_background()
                 self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
-                pygame.display.flip()
             else:
                 current_wave = self._waves[self._current_wave_index]
                 self._handle_wave(current_time, current_wave)
@@ -57,6 +69,10 @@ class App:
                     self._announcer.display_wave_announcement(self._current_wave_index)
                 self._drawer.draw(goblins=self.goblins.goblins, towers=self.arrow_towers)
                 self._announcer.display_wave_info(self._current_wave_index)
+            self.build_button.draw()
+
+            pygame.display.flip()
+
 
     def _handle_wave(self, current_time: int, current_wave: Wave) -> None:
         if not current_wave.all_enemies_spawned():
