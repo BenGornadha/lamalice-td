@@ -6,7 +6,9 @@ from mobs.goblin import Goblin
 
 
 class Arrow:
-    def __init__(self):
+    def __init__(self, screen, image):
+        self._screen = screen
+        self._image = image
         self._position: List | None = None
         self._target: Goblin | None = None
         self._speed = 500
@@ -45,3 +47,6 @@ class Arrow:
 
     def has_reach_mob(self) -> bool:
         return pygame.math.Vector2(self.position).distance_to(self._target.position) < 25
+
+    def draw(self):
+        self._screen.blit(self._image, self.position)

@@ -6,11 +6,10 @@ import pygame
 from pygame import Surface
 
 from build_button import Button, ArrowTowerButton
-from draw.draw import Drawer
 from paths.chemin import Chemin
 from mobs.goblins import Goblins
 from interface.image_repository import ImageRepository
-from buildings.tour import Tour
+from buildings.tour import Tour, Tours
 from wave import Wave
 from wave_announcer import WaveAnnouncer
 
@@ -34,17 +33,20 @@ class App:
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("Tower Defense LaMalice")
         self._image_repository = ImageRepository(width, height)
-        self._drawer = Drawer(screen=self.screen, image_repository=self._image_repository)
-        self._background = Background(screen=self.screen,
-                                      background_surface=self._image_repository.surface("background"))
-        self.path = Chemin()
-        self.arrow_towers = []
-        self.goblins = Goblins(screen=self.screen,image=self._image_repository.surface("mob"))
-        self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
-                       Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._current_wave_index = 0
         self.game_started = False
         self._announcer = WaveAnnouncer(screen=self.screen)
+        self.show_build_menu = False
+        self.show_preview_tower = False
+
+        self._background = Background(screen=self.screen,
+                                      background_surface=self._image_repository.surface("background"))
+        self.path = Chemin()
+        self.arrow_towers = Tours(screen=self.screen, image=self._image_repository.surface("tower"),
+                                  arrow_image=self._image_repository.surface("arrow"))
+        self.goblins = Goblins(screen=self.screen, image=self._image_repository.surface("mob"))
+        self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
+                       Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._build_button = Button(
             screen=self.screen,
             label='Build',
@@ -59,8 +61,7 @@ class App:
             font=pygame.font.SysFont('Arial', 24),
             on_click=self.activate_build_mode
         )
-        self.show_build_menu = False
-        self.show_preview_tower = False
+
 
     def activate_build_mode(self):
         """ Active le mode de placement de la tour. """
@@ -76,7 +77,7 @@ class App:
 
             if not self.game_started:
                 if self.show_preview_tower:
-                    self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+                    self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
             else:
                 current_wave = self._waves[self._current_wave_index]
@@ -85,13 +86,17 @@ class App:
                 self._tick(current_time=current_time)
                 if show_wave_announcement:
                     self._announcer.display_wave_announcement(self._current_wave_index)
-                self._drawer.draw(goblins=self.goblins.goblins, towers=self.arrow_towers)
+                self.goblins.draw()
+                self.arrow_towers.draw()
                 self._announcer.display_wave_info(self._current_wave_index)
 
             if self.show_build_menu:
                 self.arrow_tower_button.draw()
 
             pygame.display.flip()
+
+    def draw_preview_tower(self, mouse_position: Tuple[int, int]):
+        self.screen.blit(self._image_repository.surface("preview_tower"), mouse_position)
 
     def _handle_event(self):
         current_time = pygame.time.get_ticks()
@@ -121,13 +126,13 @@ class App:
             self._announcer.reset()
 
     def build_tour_at(self, position: Tuple[int, int]) -> None:
-        new_tower = Tour(position=position, range=300, damage=1)
-        self.arrow_towers.append(new_tower)
+        self.arrow_towers.add_tour(position=position, range=300, damage=1)
 
     def _tick(self, current_time: int) -> None:
         self.goblins.move()
-        for tower in self.arrow_towers:
-            tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
+        self.arrow_towers.attack(current_time=current_time, ennemis=self.goblins.goblins)
+        # for tower in self.arrow_towers:
+        #     tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
 
         pygame.display.flip()
         pygame.time.wait(1)

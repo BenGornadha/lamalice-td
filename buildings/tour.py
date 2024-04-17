@@ -5,15 +5,37 @@ from buildings.building import Building
 from mobs.goblin import Goblin
 
 
+class Tours:
+    def __init__(self, screen, image, arrow_image) -> None:
+        self._screen = screen
+        self._image = image
+        self._arrow_image = arrow_image
+        self._tours = []
+
+    def attack(self,current_time: int, ennemis: List[Goblin]):
+        for tour in self._tours:
+            tour.attack(current_time=current_time,ennemis=ennemis)
+
+    def add_tour(self, position: tuple, range: int, damage: int):
+        self._tours.append(
+            Tour(screen=self._screen, image=self._image, arrow_image=self._arrow_image, position=position, range=range,
+                 damage=damage))
+
+    def draw(self):
+        for tour in self._tours:
+            tour.draw()
+
 class Tour(Building):
-    def __init__(self, position: tuple, range: int, damage: int):
+    def __init__(self, screen, image, arrow_image, position: tuple, range: int, damage: int):
+        self._screen = screen
+        self._image = image
         self._position = position
         self._portee = range
         self._damage = damage
         self._level = 0
         self._last_attack_time = 0
         self._attack_cooldown = 400
-        self.arrow = Arrow()
+        self.arrow = Arrow(screen=screen, image=arrow_image)
 
     def attack(self, current_time: int, ennemis: List[Goblin]) -> None:
         self._current_arrow(current_time=current_time)
@@ -48,3 +70,8 @@ class Tour(Building):
         self.arrow.set_position(x=self.position[0], y=self.position[1])
         self._last_attack_time = current_time
         self.arrow.lock_target(mob=to)
+
+    def draw(self):
+        self._screen.blit(self._image, self._position)
+        if self.arrow.position is not None:
+            self.arrow.draw()
