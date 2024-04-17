@@ -76,6 +76,7 @@ class App:
                 self._drawer.draw_background()
                 if self.show_preview_tower:
                     self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+
             else:
                 current_wave = self._waves[self._current_wave_index]
                 self._handle_wave(current_time, current_wave)
