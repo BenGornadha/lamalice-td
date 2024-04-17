@@ -81,7 +81,7 @@ class App:
 
             else:
                 current_wave = self._waves[self._current_wave_index]
-                self._handle_wave(current_time, current_wave)
+                self._spawn_ennemies(current_time, current_wave)
                 show_wave_announcement = self._announcer.update_announcement(self._current_wave_index, current_time)
                 self._tick(current_time=current_time)
                 if show_wave_announcement:
@@ -114,10 +114,10 @@ class App:
                     self.game_started = True
         return current_time
 
-    def _handle_wave(self, current_time: int, current_wave: Wave) -> None:
+    def _spawn_ennemies(self, current_time: int, current_wave: Wave) -> None:
         if not current_wave.all_enemies_spawned():
-            current_wave.spawn_enemies(current_time)
-        elif current_wave.all_enemies_defeated():
+            current_wave.spawn_mob(current_time)
+        elif current_wave.all_mobs_defeated():
             self._next_wave()
 
     def _next_wave(self) -> None:
@@ -135,4 +135,4 @@ class App:
         #     tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
 
         pygame.display.flip()
-        pygame.time.wait(1)
+        pygame.time.wait(10)

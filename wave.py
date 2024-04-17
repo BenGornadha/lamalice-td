@@ -10,7 +10,9 @@ class Wave:
         self.last_spawn_time = 0
         self.enemies = []
 
-    def spawn_enemies(self, current_time: int) -> None:
+
+
+    def spawn_mob(self, current_time: int) -> None:
         if self.spawned_enemies < self.num_enemies:
             if current_time - self.last_spawn_time > 1000:  # Une seconde entre chaque ennemi
                 self.goblin_factory.create_goblin(vitesse=1, sante=self.enemy_hp)
@@ -20,5 +22,5 @@ class Wave:
     def all_enemies_spawned(self) -> bool:
         return self.spawned_enemies == self.num_enemies
 
-    def all_enemies_defeated(self) -> bool:
-        return all(not goblin.is_alive() for goblin in self.enemies)
+    def all_mobs_defeated(self) -> bool:
+        return all( goblin.is_dead() for goblin in self.enemies)
