@@ -21,7 +21,7 @@ class Drawer:
         self.font = pygame.font.SysFont('Arial', 24)
 
     def draw(self, goblins, towers):
-        self.draw_background()
+        # self.draw_background()
         self._draw_goblins(goblins=goblins)
         self._draw_towers(towers=towers)
 

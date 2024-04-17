@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Tuple
 
 import pygame
+from pygame import Surface
 
 from build_button import Button, ArrowTowerButton
 from draw.draw import Drawer
@@ -16,6 +17,15 @@ from wave_announcer import WaveAnnouncer
 pygame.init()
 
 
+class Background:
+
+    def __init__(self, screen, background_surface: Surface) -> None:
+        self._screen = screen
+        self._background_surface = background_surface
+
+    def draw(self):
+        self._screen.blit(self._background_surface, (0, 0))
+
 
 class App:
 
@@ -23,29 +33,30 @@ class App:
         self._running = False
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("Tower Defense LaMalice")
-        self._drawer = Drawer(screen=self.screen, image_repository=ImageRepository(width, height))
-        self.font = pygame.font.SysFont('Arial', 24)
-
+        self._image_repository = ImageRepository(width, height)
+        self._drawer = Drawer(screen=self.screen, image_repository=self._image_repository)
+        self._background = Background(screen=self.screen,
+                                      background_surface=self._image_repository.surface("background"))
         self.path = Chemin()
         self.arrow_towers = []
-        self.goblins = Goblins()
+        self.goblins = Goblins(screen=self.screen,image=self._image_repository.surface("mob"))
         self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
                        Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
         self._current_wave_index = 0
         self.game_started = False
         self._announcer = WaveAnnouncer(screen=self.screen)
-        self.build_button = Button(
+        self._build_button = Button(
             screen=self.screen,
             label='Build',
             position=((width - 100) / 2, height - 50),
             dimensions=(100, 40),
-            font=self.font
+            font=pygame.font.SysFont('Arial', 24)
         )
         self.arrow_tower_button = ArrowTowerButton(
             screen=self.screen,
             position=((width - 200) / 2, height - 100),
             dimensions=(200, 40),
-            font=self.font,
+            font=pygame.font.SysFont('Arial', 24),
             on_click=self.activate_build_mode
         )
         self.show_build_menu = False
@@ -57,23 +68,13 @@ class App:
 
     def run(self) -> None:
         self._running = True
+
         while self._running:
-            current_time = pygame.time.get_ticks()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self._running = False
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    if self.build_button.is_clicked(event):
-                        self.show_build_menu = not self.show_build_menu  # Affiche ou masque le menu
-                    elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
-                        self.arrow_tower_button.click()  # Utilise la méthode click du bouton
-                        self.show_preview_tower = True
-                    elif not self.game_started and self.show_preview_tower:
-                        self.build_tour_at(pygame.mouse.get_pos())
-                        self.game_started = True
+            current_time = self._handle_event()
+            self._background.draw()
+            self._build_button.draw()
 
             if not self.game_started:
-                self._drawer.draw_background()
                 if self.show_preview_tower:
                     self._drawer.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
@@ -86,12 +87,27 @@ class App:
                     self._announcer.display_wave_announcement(self._current_wave_index)
                 self._drawer.draw(goblins=self.goblins.goblins, towers=self.arrow_towers)
                 self._announcer.display_wave_info(self._current_wave_index)
-            self.build_button.draw()
+
             if self.show_build_menu:
                 self.arrow_tower_button.draw()
 
             pygame.display.flip()
 
+    def _handle_event(self):
+        current_time = pygame.time.get_ticks()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self._running = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self._build_button.is_clicked(event):
+                    self.show_build_menu = not self.show_build_menu  # Affiche ou masque le menu
+                elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
+                    self.arrow_tower_button.click()  # Utilise la méthode click du bouton
+                    self.show_preview_tower = True
+                elif not self.game_started and self.show_preview_tower:
+                    self.build_tour_at(pygame.mouse.get_pos())
+                    self.game_started = True
+        return current_time
 
     def _handle_wave(self, current_time: int, current_wave: Wave) -> None:
         if not current_wave.all_enemies_spawned():
@@ -114,5 +130,4 @@ class App:
             tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
 
         pygame.display.flip()
-        pygame.time.wait(10)
-
+        pygame.time.wait(1)
