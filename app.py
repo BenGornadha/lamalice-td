@@ -130,5 +130,5 @@ class App:
         self._waves.move_ennemies()
         self.arrow_towers.attack(current_time=current_time, ennemis=self._waves.ennemies())
 
-        pygame.display.flip()
-        pygame.time.wait(10)
+        # pygame.display.flip()
+        # pygame.time.wait(1)

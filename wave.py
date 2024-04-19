@@ -50,7 +50,6 @@ class Waves:
 
     def run(self, current_time: int):
         if not self._all_enemies_already_spawned():
-            print("spawning mob")
             self._spawn_mob(current_time=current_time)
             return
         if self._current_wave_is_over():
