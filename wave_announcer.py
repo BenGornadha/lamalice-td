@@ -10,7 +10,7 @@ class WaveAnnouncer:
         self.wave_announcement_time = 0
         self.first_ever_wave_time = -1
 
-    def _display_wave_info(self, wave_number):
+    def display_wave_info(self, wave_number):
         wave_text = self.font.render(f'Wave: {wave_number + 1}', True, (255, 255, 255))
         self.screen.blit(wave_text, (self.screen.get_width() - wave_text.get_width() - 10, 10))
 
@@ -21,7 +21,6 @@ class WaveAnnouncer:
 
 
     def run(self, show_wave_announcement: bool, wave_current_index: int, current_time: int) -> None:
-        self._display_wave_info(wave_number=wave_current_index)
         self._first_ever_wave_announcement(current_time=current_time, wave_current_index=wave_current_index)
 
         if show_wave_announcement :

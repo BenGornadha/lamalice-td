@@ -74,10 +74,7 @@ class App:
             current_time = self._handle_event()
 
             if not self.game_started:
-                self._background.draw()
-                self._build_button.draw()
-                if self.show_preview_tower:
-                    self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+                self._draw_when_game_has_not_started()
 
             else:
                 show_wave_announcement = self._waves.run(current_time=current_time)
@@ -85,15 +82,25 @@ class App:
                                     wave_current_index=self._waves.current_index,
                                     current_time=current_time)
                 self._tick(current_time=current_time)
-                self._background.draw()
-                self._build_button.draw()
-                self._waves.draw_ennemies()
-                self.arrow_towers.draw()
+                self._draw_when_game_has_started()
 
             if self.show_build_menu:
                 self.arrow_tower_button.draw()
 
             pygame.display.flip()
+
+    def _draw_when_game_has_not_started(self):
+        self._background.draw()
+        self._build_button.draw()
+        if self.show_preview_tower:
+            self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+
+    def _draw_when_game_has_started(self):
+        self._background.draw()
+        self._announcer.display_wave_info(wave_number=self._waves.current_index)
+        self._build_button.draw()
+        self._waves.draw_ennemies()
+        self.arrow_towers.draw()
 
     def draw_preview_tower(self, mouse_position: Tuple[int, int]):
         self.screen.blit(self._image_repository.surface("preview_tower"), mouse_position)
