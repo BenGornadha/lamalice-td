@@ -5,12 +5,12 @@ from typing import Tuple
 import pygame
 from pygame import Surface
 
-from build_button import Button, ArrowTowerButton
+from build_button import BuildButton, ArrowTowerBuildButton
 from paths.chemin import Chemin
 from mobs.goblins import Goblins
 from interface.image_repository import ImageRepository
 from buildings.tour import Tour, Tours
-from wave import Wave
+from wave import Wave, Waves
 from wave_announcer import WaveAnnouncer
 
 pygame.init()
@@ -45,16 +45,18 @@ class App:
         self.arrow_towers = Tours(screen=self.screen, image=self._image_repository.surface("tower"),
                                   arrow_image=self._image_repository.surface("arrow"))
         self.goblins = Goblins(screen=self.screen, image=self._image_repository.surface("mob"))
-        self._waves = [Wave(goblin_factory=self.goblins, enemy_hp=2, num_enemies=7),
-                       Wave(goblin_factory=self.goblins, enemy_hp=3, num_enemies=6)]
-        self._build_button = Button(
+        self._waves = Waves()
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins, enemy_hp=1, num_enemies=3))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins, enemy_hp=1, num_enemies=4))
+
+        self._build_button = BuildButton(
             screen=self.screen,
             label='Build',
             position=((width - 100) / 2, height - 50),
             dimensions=(100, 40),
             font=pygame.font.SysFont('Arial', 24)
         )
-        self.arrow_tower_button = ArrowTowerButton(
+        self.arrow_tower_button = ArrowTowerBuildButton(
             screen=self.screen,
             position=((width - 200) / 2, height - 100),
             dimensions=(200, 40),
@@ -62,9 +64,7 @@ class App:
             on_click=self.activate_build_mode
         )
 
-
     def activate_build_mode(self):
-        """ Active le mode de placement de la tour. """
         self.build_mode = True
 
     def run(self) -> None:
@@ -72,23 +72,24 @@ class App:
 
         while self._running:
             current_time = self._handle_event()
-            self._background.draw()
-            self._build_button.draw()
+
 
             if not self.game_started:
+                self._background.draw()
+                self._build_button.draw()
                 if self.show_preview_tower:
                     self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
             else:
-                current_wave = self._waves[self._current_wave_index]
-                self._spawn_ennemies(current_time, current_wave)
-                show_wave_announcement = self._announcer.update_announcement(self._current_wave_index, current_time)
+                show_wave_announcement = self._waves.run(current_time=current_time)
+                self._announcer.run(show_wave_announcement=show_wave_announcement,
+                                    wave_current_index=self._waves.current_index,
+                                    current_time=current_time)
                 self._tick(current_time=current_time)
-                if show_wave_announcement:
-                    self._announcer.display_wave_announcement(self._current_wave_index)
+                self._background.draw()
+                self._build_button.draw()
                 self.goblins.draw()
                 self.arrow_towers.draw()
-                self._announcer.display_wave_info(self._current_wave_index)
 
             if self.show_build_menu:
                 self.arrow_tower_button.draw()
@@ -105,25 +106,15 @@ class App:
                 self._running = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self._build_button.is_clicked(event):
-                    self.show_build_menu = not self.show_build_menu  # Affiche ou masque le menu
+                    self.show_build_menu = not self.show_build_menu
                 elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
-                    self.arrow_tower_button.click()  # Utilise la méthode click du bouton
+                    self.arrow_tower_button.click()
                     self.show_preview_tower = True
                 elif not self.game_started and self.show_preview_tower:
                     self.build_tour_at(pygame.mouse.get_pos())
                     self.game_started = True
         return current_time
 
-    def _spawn_ennemies(self, current_time: int, current_wave: Wave) -> None:
-        if not current_wave.all_enemies_spawned():
-            current_wave.spawn_mob(current_time)
-        elif current_wave.all_mobs_defeated():
-            self._next_wave()
-
-    def _next_wave(self) -> None:
-        if self._current_wave_index + 1 < len(self._waves):
-            self._current_wave_index += 1
-            self._announcer.reset()
 
     def build_tour_at(self, position: Tuple[int, int]) -> None:
         self.arrow_towers.add_tour(position=position, range=300, damage=1)
@@ -131,8 +122,6 @@ class App:
     def _tick(self, current_time: int) -> None:
         self.goblins.move()
         self.arrow_towers.attack(current_time=current_time, ennemis=self.goblins.goblins)
-        # for tower in self.arrow_towers:
-        #     tower.attack(current_time=current_time, ennemis=self.goblins.goblins)
 
         pygame.display.flip()
-        pygame.time.wait(10)
+        pygame.time.wait(50)

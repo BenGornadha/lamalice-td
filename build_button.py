@@ -1,6 +1,6 @@
 import pygame
 
-class Button:
+class BuildButton:
     def __init__(self, screen, label, position, dimensions, font, color=(0, 200, 0), text_color=(255, 255, 255)):
         self.screen = screen
         self.label = label
@@ -12,9 +12,7 @@ class Button:
         self.rect = pygame.Rect(position[0], position[1], dimensions[0], dimensions[1])
 
     def draw(self):
-        # Dessine le rectangle du bouton
         pygame.draw.rect(self.screen, self.color, self.rect)
-        # Dessine le texte au centre du bouton
         text_surface = self.font.render(self.label, True, self.text_color)
         text_rect = text_surface.get_rect(center=(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2))
         self.screen.blit(text_surface, text_rect)
@@ -25,11 +23,10 @@ class Button:
                 return True
         return False
 
-class ArrowTowerButton(Button):
+class ArrowTowerBuildButton(BuildButton):
     def __init__(self, screen, position, dimensions, font, on_click):
         super().__init__(screen, label="Arrow Tower", position=position, dimensions=dimensions, font=font)
         self.on_click = on_click  # Callback pour gérer le clic sur le bouton
 
     def click(self, *args, **kwargs):
-        """ Déclenche l'action associée au bouton """
-        self.on_click(*args, **kwargs)  # Appelle la fonction callback avec des arguments supplémentaires si nécessaire
+        self.on_click(*args, **kwargs)
