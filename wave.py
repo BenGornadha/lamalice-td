@@ -1,10 +1,8 @@
 from __future__ import annotations
-
-import sys
 from typing import List
 
-from mobs.goblins import Goblins
-from wave_announcer import WaveAnnouncer
+from mobs.goblin import Goblin
+from mobs.goblinfactory import GoblinFactory, Goblins
 
 
 class AnnounceNewWave:
@@ -27,6 +25,15 @@ class Waves:
     def current_index(self):
         return self._current_index
 
+    def ennemies(self) -> List[Goblin]:
+        return self.current_wave.enemies.goblins
+
+    def move_ennemies(self) -> None:
+        self.current_wave.move()
+
+    def draw_ennemies(self) -> None:
+        self.current_wave.draw()
+
     def register_wave(self, wave: Wave) -> None:
         self._waves.append(wave)
         if self._current_wave is None:
@@ -42,35 +49,35 @@ class Waves:
         self._current_wave.spawn_mob(current_time=current_time)
 
     def run(self, current_time: int):
-        print("in method run of waves")
-        if self._current_wave_is_over():
-            print("current wave is over !! ")
-
-            if self._current_index + 1 < len(self._waves):
-                self._current_index += 1
-                print("go announce !!")
-                return AnnounceNewWave()
-            print("pass")
-            return
         if not self._all_enemies_already_spawned():
             print("spawning mob")
             self._spawn_mob(current_time=current_time)
             return
-        print("eeeelse")
+        if self._current_wave_is_over():
+            if self._current_index + 1 < len(self._waves):
+                self.increment_wave()
+                return AnnounceNewWave()
+            return
+
+
+    def increment_wave(self):
+        self._current_index += 1
+        self._current_wave = self._waves[self._current_index]
+
 
 class Wave:
-    def __init__(self, goblin_factory: Goblins, enemy_hp: int = 2, num_enemies=30):
+    def __init__(self, goblin_factory: GoblinFactory, enemy_hp: int = 2, num_enemies=30):
         self.goblin_factory = goblin_factory
         self.enemy_hp = enemy_hp
         self.num_enemies = num_enemies
         self.spawned_enemies = 0
         self.last_spawn_time = 0
-        self.enemies = []
+        self.enemies = Goblins()
 
     def spawn_mob(self, current_time: int) -> None:
         if self.spawned_enemies < self.num_enemies:
             if current_time - self.last_spawn_time > 1000:  # Une seconde entre chaque ennemi
-                self.goblin_factory.create_goblin(vitesse=1, sante=self.enemy_hp)
+                self.enemies.add_goblin(self.goblin_factory.create_goblin(vitesse=1, sante=self.enemy_hp))
                 self.spawned_enemies += 1
                 self.last_spawn_time = current_time
 
@@ -78,4 +85,13 @@ class Wave:
         return self.spawned_enemies == self.num_enemies
 
     def all_mobs_defeated(self) -> bool:
-        return all(goblin.is_dead() for goblin in self.goblin_factory.goblins)
+        return all(goblin.is_dead() for goblin in self.enemies.goblins)
+
+    def move(self) -> None:
+        for goblin in self.enemies.goblins:
+            if goblin.is_alive():
+                goblin.deplacer()
+
+    def draw(self):
+        for goblin in self.enemies.goblins:
+            goblin.draw()
