@@ -3,6 +3,7 @@ from typing import List
 from attacks.arrow import Arrow
 from buildings.building import Building
 from mobs.goblin import Goblin
+from player import Player
 
 
 class Tours:
@@ -52,6 +53,8 @@ class Tour(Building):
 
             if self.arrow.has_reach_mob():
                 self.arrow.target.subir_degats(self._damage)
+                if self.arrow.target.is_dead():
+                    Player.earn_gold(amount=1)
                 self.arrow.reset_position()
                 self.arrow.reset_target()
 

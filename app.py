@@ -3,27 +3,18 @@ from __future__ import annotations
 from typing import Tuple
 
 import pygame
-from pygame import Surface
 
+from background import Background
 from build_button import BuildButton, ArrowTowerBuildButton
 from paths.chemin import Chemin
 from mobs.goblinfactory import GoblinFactory
 from interface.image_repository import ImageRepository
 from buildings.tour import Tours
+from player import Player
 from wave import Wave, Waves
 from wave_announcer import WaveAnnouncer
 
 pygame.init()
-
-
-class Background:
-
-    def __init__(self, screen, background_surface: Surface) -> None:
-        self._screen = screen
-        self._background_surface = background_surface
-
-    def draw(self):
-        self._screen.blit(self._background_surface, (0, 0))
 
 
 class App:
@@ -39,6 +30,7 @@ class App:
         self.show_build_menu = False
         self.show_preview_tower = False
 
+        self._player = Player()
         self._background = Background(screen=self.screen,
                                       background_surface=self._image_repository.surface("background"))
         self.path = Chemin()
@@ -46,8 +38,8 @@ class App:
                                   arrow_image=self._image_repository.surface("arrow"))
         self.goblins_factory = GoblinFactory(screen=self.screen, image=self._image_repository.surface("mob"))
         self._waves = Waves()
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=1, num_enemies=10))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=2, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=4, num_enemies=10))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=5, num_enemies=7))
 
         self._build_button = BuildButton(
             screen=self.screen,
@@ -102,6 +94,8 @@ class App:
         self._build_button.draw()
         self._waves.draw_ennemies()
         self.arrow_towers.draw()
+        if self.show_preview_tower:
+            self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
     def draw_preview_tower(self, mouse_position: Tuple[int, int]):
         self.screen.blit(self._image_repository.surface("preview_tower"), mouse_position)
@@ -117,8 +111,10 @@ class App:
                 elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
                     self.arrow_tower_button.click()
                     self.show_preview_tower = True
-                elif not self.game_started and self.show_preview_tower:
-                    self.build_tour_at(pygame.mouse.get_pos())
+                elif self.show_preview_tower:
+                    if Player.can_buy(amount=20):
+                        Player.spend_gold(amount=20)
+                        self.build_tour_at(pygame.mouse.get_pos())
                     self.game_started = True
                     self.show_build_menu = False
 
@@ -126,6 +122,7 @@ class App:
 
     def build_tour_at(self, position: Tuple[int, int]) -> None:
         self.arrow_towers.add_tour(position=position, range=300, damage=1)
+        self.show_preview_tower = False
 
     def _tick(self, current_time: int) -> None:
         self._waves.move_ennemies()
