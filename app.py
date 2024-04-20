@@ -15,7 +15,7 @@ from wave import Wave, Waves
 from wave_announcer import WaveAnnouncer
 
 pygame.init()
-
+pygame.font.init()
 
 class App:
 
@@ -29,8 +29,6 @@ class App:
         self._announcer = WaveAnnouncer(screen=self.screen)
         self.show_build_menu = False
         self.show_preview_tower = False
-
-        self._player = Player()
         self._background = Background(screen=self.screen,
                                       background_surface=self._image_repository.surface("background"))
         self.path = Chemin()
@@ -55,6 +53,8 @@ class App:
             font=pygame.font.SysFont('Arial', 24),
             on_click=self.activate_build_mode
         )
+        Player.set_screen(screen=self.screen)
+
 
     def activate_build_mode(self):
         self.build_mode = True
@@ -86,11 +86,13 @@ class App:
     def _draw_when_game_has_not_started(self):
         self._background.draw()
         self._build_button.draw()
+        Player.display_current_money()
         if self.show_preview_tower:
             self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
     def _draw_when_game_has_started(self):
         self._announcer.display_wave_info(wave_number=self._waves.current_index)
+        Player.display_current_money()
         self._build_button.draw()
         self._waves.draw_ennemies()
         self.arrow_towers.draw()
