@@ -7,7 +7,6 @@ import pygame
 from background import Background
 from build_button import BuildButton, ArrowTowerBuildButton
 from paths.chemin import Chemin
-from mobs.goblinfactory import GoblinFactory
 from interface.image_repository import ImageRepository
 from buildings.tour import Tours
 from player import Player
@@ -34,16 +33,8 @@ class App:
         self.path = Chemin()
         self.arrow_towers = Tours(screen=self.screen, image=self._image_repository.surface("tower"),
                                   arrow_image=self._image_repository.surface("arrow"))
-        self.goblins_factory = GoblinFactory(screen=self.screen, image=self._image_repository.surface("mob"))
-        self._waves = Waves()
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=4, num_enemies=10))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=5, num_enemies=7))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=6, num_enemies=7))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=7, num_enemies=7))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=8, num_enemies=7))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=10, num_enemies=7))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=12, num_enemies=7))
-        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=15, num_enemies=7))
+        self._waves = Waves(screen=self.screen,image_repository=self._image_repository)
+
 
         self._build_button = BuildButton(
             screen=self.screen,
@@ -57,7 +48,8 @@ class App:
             position=((width - 200) / 2, height - 100),
             dimensions=(200, 40),
             font=pygame.font.SysFont('Arial', 24),
-            on_click=self.activate_build_mode
+            on_click=self.activate_build_mode,
+            cost=10
         )
         Player.set_screen(screen=self.screen)
 
@@ -120,8 +112,10 @@ class App:
                     self.arrow_tower_button.click()
                     self.show_preview_tower = True
                 elif self.show_preview_tower:
-                    if Player.can_buy(amount=20):
-                        Player.spend_gold(amount=20)
+                    nb_tour = self.arrow_towers.n_towers()
+                    self.arrow_tower_button.update_label(new_cost=10 + (5 * nb_tour))
+                    if Player.can_buy(amount=10 + (5 * nb_tour)):
+                        Player.spend_gold(amount=10 + (5 * nb_tour))
                         self.build_tour_at(pygame.mouse.get_pos())
                     self.game_started = True
                     self.show_build_menu = False

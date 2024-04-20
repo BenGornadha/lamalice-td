@@ -1,6 +1,9 @@
 from __future__ import annotations
 from typing import List
 
+from pygame import Surface
+
+from interface.image_repository import ImageRepository
 from mobs.goblin import Goblin
 from mobs.goblinfactory import GoblinFactory, Goblins
 
@@ -12,10 +15,29 @@ class AnnounceNewWave:
 
 class Waves:
 
-    def __init__(self):
+    def __init__(self, screen : Surface, image_repository: ImageRepository):
         self._waves: List[Wave] = []
         self._current_wave: Wave | None = None
         self._current_index = 0
+        self.goblins_factory = GoblinFactory(screen=screen, image=image_repository.surface("mob"))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=4, num_enemies=10))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=5, num_enemies=7))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=6, num_enemies=7))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=7, num_enemies=7))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=8, num_enemies=7))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=10, num_enemies=7))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=12, num_enemies=7))
+        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=15, num_enemies=7))
+
+    def a(self):
+        for i in range(1,100):
+            if i % 5 == 0:
+                self.register_wave(
+                    wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=self.current_wave.enemy_hp * 1.4,
+                              num_enemies=10, vitesse=5))
+
+            self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=self.current_wave.enemy_hp*1.4, num_enemies=7))
+
 
     @property
     def current_wave(self) -> Wave:
@@ -65,18 +87,19 @@ class Waves:
 
 
 class Wave:
-    def __init__(self, goblin_factory: GoblinFactory, enemy_hp: int = 2, num_enemies=30):
+    def __init__(self, goblin_factory: GoblinFactory, enemy_hp: float = 2, num_enemies=30, vitesse = 1):
         self.goblin_factory = goblin_factory
         self.enemy_hp = enemy_hp
         self.num_enemies = num_enemies
         self.spawned_enemies = 0
         self.last_spawn_time = 0
         self.enemies = Goblins()
+        self.vitesse = vitesse
 
     def spawn_mob(self, current_time: int) -> None:
         if self.spawned_enemies < self.num_enemies:
             if current_time - self.last_spawn_time > 1000:  # Une seconde entre chaque ennemi
-                self.enemies.add_goblin(self.goblin_factory.create_goblin(vitesse=1, sante=self.enemy_hp))
+                self.enemies.add_goblin(self.goblin_factory.create_goblin(vitesse=self.vitesse, sante=self.enemy_hp))
                 self.spawned_enemies += 1
                 self.last_spawn_time = current_time
 

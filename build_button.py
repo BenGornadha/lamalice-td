@@ -11,6 +11,9 @@ class BuildButton:
         self.text_color = text_color
         self.rect = pygame.Rect(position[0], position[1], dimensions[0], dimensions[1])
 
+    def update_label(self, new_cost : int):
+        self.label = f"Arrow Tower ({new_cost} coins)"
+
     def draw(self):
         pygame.draw.rect(self.screen, self.color, self.rect)
         text_surface = self.font.render(self.label, True, self.text_color)
@@ -24,8 +27,8 @@ class BuildButton:
         return False
 
 class ArrowTowerBuildButton(BuildButton):
-    def __init__(self, screen, position, dimensions, font, on_click):
-        super().__init__(screen, label="Arrow Tower", position=position, dimensions=dimensions, font=font)
+    def __init__(self, screen, position, dimensions, font, cost, on_click):
+        super().__init__(screen, label=f"Arrow Tower ({cost} coins)", position=position, dimensions=dimensions, font=font)
         self.on_click = on_click  # Callback pour gérer le clic sur le bouton
 
     def click(self, *args, **kwargs):

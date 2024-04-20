@@ -13,6 +13,9 @@ class Tours:
         self._arrow_image = arrow_image
         self._tours = []
 
+    def n_towers(self):
+        return len(self._tours)
+
     def attack(self,current_time: int, ennemis: List[Goblin]):
         for tour in self._tours:
             tour.attack(current_time=current_time,ennemis=ennemis)
