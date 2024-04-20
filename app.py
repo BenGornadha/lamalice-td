@@ -71,6 +71,8 @@ class App:
         self._running = True
 
         while self._running:
+            self._background.draw()
+
             current_time = self._handle_event()
 
             if not self.game_started:
@@ -96,7 +98,6 @@ class App:
             self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
     def _draw_when_game_has_started(self):
-        self._background.draw()
         self._announcer.display_wave_info(wave_number=self._waves.current_index)
         self._build_button.draw()
         self._waves.draw_ennemies()
@@ -130,5 +131,4 @@ class App:
         self._waves.move_ennemies()
         self.arrow_towers.attack(current_time=current_time, ennemis=self._waves.ennemies())
 
-        # pygame.display.flip()
-        # pygame.time.wait(1)
+        pygame.time.wait(10)

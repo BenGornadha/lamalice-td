@@ -19,7 +19,6 @@ class WaveAnnouncer:
         text_rect = announcement_text.get_rect(center=(self.screen.get_width() / 2, self.screen.get_height() / 2))
         self.screen.blit(announcement_text, text_rect)
 
-
     def run(self, show_wave_announcement: bool, wave_current_index: int, current_time: int) -> None:
         self._first_ever_wave_announcement(current_time=current_time, wave_current_index=wave_current_index)
 
