@@ -38,6 +38,12 @@ class App:
         self._waves = Waves()
         self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=4, num_enemies=10))
         self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=5, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=6, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=7, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=8, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=10, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=12, num_enemies=7))
+        self._waves.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=15, num_enemies=7))
 
         self._build_button = BuildButton(
             screen=self.screen,
@@ -123,7 +129,7 @@ class App:
         return current_time
 
     def build_tour_at(self, position: Tuple[int, int]) -> None:
-        self.arrow_towers.add_tour(position=position, range=300, damage=1)
+        self.arrow_towers.add_tour(position=position)
         self.show_preview_tower = False
 
     def _tick(self, current_time: int) -> None:

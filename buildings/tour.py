@@ -17,7 +17,7 @@ class Tours:
         for tour in self._tours:
             tour.attack(current_time=current_time,ennemis=ennemis)
 
-    def add_tour(self, position: tuple, range: int, damage: int):
+    def add_tour(self, position: tuple, range: int= 100, damage: int = 2):
         self._tours.append(
             Tour(screen=self._screen, image=self._image, arrow_image=self._arrow_image, position=position, range=range,
                  damage=damage))
@@ -35,7 +35,7 @@ class Tour(Building):
         self._damage = damage
         self._level = 0
         self._last_attack_time = 0
-        self._attack_cooldown = 400
+        self._attack_cooldown = 1000
         self.arrow = Arrow(screen=screen, image=arrow_image)
 
     def attack(self, current_time: int, ennemis: List[Goblin]) -> None:
