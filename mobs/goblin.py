@@ -5,7 +5,7 @@ from paths.chemin import Chemin
 
 
 class Goblin:
-    def __init__(self, screen: Surface, image: Surface, vitesse=1, sante=2):
+    def __init__(self, screen: Surface, image: Surface, vitesse=1, sante=200):
         self._screen = screen
         self._image = image
         self._chemin = Chemin().get_path_points()

@@ -31,7 +31,8 @@ class App:
         self._background = Background(screen=self.screen,
                                       background_surface=self._image_repository.surface("background"))
         self.path = Chemin()
-        self.arrow_towers = Tours(screen=self.screen, image=self._image_repository.surface("tower"),
+        self.arrow_towers = Tours(screen=self.screen,
+                                  image=self._image_repository.surface("tower"),
                                   arrow_image=self._image_repository.surface("arrow"))
         self._waves = Waves(screen=self.screen,image_repository=self._image_repository)
 
@@ -108,14 +109,17 @@ class App:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self._build_button.is_clicked(event):
                     self.show_build_menu = not self.show_build_menu
+                    self.arrow_tower_button.update_label(new_cost=10 + (5 * self.arrow_towers.n_towers()))
+
                 elif self.show_build_menu and self.arrow_tower_button.is_clicked(event):
                     self.arrow_tower_button.click()
                     self.show_preview_tower = True
+                    self.arrow_tower_button.update_label(new_cost=10 + (5 * self.arrow_towers.n_towers()))
                 elif self.show_preview_tower:
                     nb_tour = self.arrow_towers.n_towers()
-                    self.arrow_tower_button.update_label(new_cost=10 + (5 * nb_tour +1 ))
-                    if Player.can_buy(amount=10 + (5 * nb_tour + 1)):
-                        Player.spend_gold(amount=10 + (5 * nb_tour + 1))
+                    self.arrow_tower_button.update_label(new_cost=10 + (5 * nb_tour))
+                    if Player.can_buy(amount=10 + (5 * nb_tour )):
+                        Player.spend_gold(amount=10 + (5 * nb_tour))
                         self.build_tour_at(pygame.mouse.get_pos())
                     self.game_started = True
                     self.show_build_menu = False
