@@ -64,12 +64,26 @@ class Tour(Building):
     def draw_level_up_option(self):
         if self.show_level_up:
             text = "Level up for 20 coins"
+            # Assurez-vous que la police a été définie quelque part dans le constructeur de la classe
             label = self.font.render(text, True, (255, 255, 255))
-            label_rect = label.get_rect(center=(self._position[0] + 50, self._position[1] - 20))  # Position ajustée
-            self.level_up_rect = label.get_rect(center=(self._position[0] + 50, self._position[1] - 20))
 
-            pygame.draw.rect(self._screen, (0, 0, 0),
-                             label_rect.inflate(10, 5))  # Dessine un rectangle noir autour du texte
+            # Calcul de la position du texte et du rectangle d'affichage
+            label_rect = label.get_rect(center=(self._position[0] + 50, self._position[1] - 20))
+            self.level_up_rect = label_rect.inflate(20, 10)  # Ajout d'un peu plus d'espace autour du texte
+
+            # Dessin du fond avec une bordure plus stylisée
+            background_color = (50, 50, 50)  # Gris foncé pour le fond
+            border_color = (200, 200, 200)  # Gris clair pour la bordure
+            pygame.draw.rect(self._screen, border_color, self.level_up_rect)  # Bordure
+            pygame.draw.rect(self._screen, background_color, self.level_up_rect.inflate(-4, -4))  # Fond
+
+            # Dessiner une ombre pour le texte
+            shadow_color = (50, 50, 50)
+            shadow_offset = 2
+            shadow_rect = label_rect.move(shadow_offset, shadow_offset)
+            self._screen.blit(self.font.render(text, True, shadow_color), shadow_rect)
+
+            # Dessin du texte
             self._screen.blit(label, label_rect)
 
     def attack(self, current_time: int, ennemis: List[Goblin]) -> None:

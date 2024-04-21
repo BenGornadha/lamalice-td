@@ -40,14 +40,14 @@ class App:
         self._build_button = BuildButton(
             screen=self.screen,
             label='Build',
-            position=((width - 100) / 2, height - 50),
-            dimensions=(100, 40),
+            position=((width - 200) / 2, height - 50),
+            dimensions=(200, 40),
             font=pygame.font.SysFont('Arial', 24)
         )
         self.arrow_tower_button = ArrowTowerBuildButton(
             screen=self.screen,
-            position=((width - 200) / 2, height - 100),
-            dimensions=(200, 40),
+            position=((width - 300) / 2, height - 100),
+            dimensions=(300, 40),
             font=pygame.font.SysFont('Arial', 24),
             on_click=self.activate_build_mode,
             cost=10
@@ -114,17 +114,17 @@ class App:
                 for a_tower in self.arrow_towers.towers:
                     if a_tower.is_clicked(mouse_pos=pygame.mouse.get_pos()):
                         self.draw_lvl_up_menu = not self.draw_lvl_up_menu
-                        if self.draw_lvl_up_menu:
+                        if self.draw_lvl_up_menu is True:
                             self.current_tower_selected = a_tower
+                            self.current_tower_selected.draw_level_up_option()
                         else:
                             self.current_tower_selected = False
-                        a_tower.draw_level_up_option()
+                        break
                 if self.draw_lvl_up_menu:
                     if self.current_tower_selected.level_up_rect.collidepoint(event.pos):
                         if Player.can_buy(amount=20):
                             Player.spend_gold(20)
                             self.current_tower_selected.lvp_up(new_image=self._image_repository.surface("tower2"))
-
                 if self._build_button.is_clicked(event):
                     self.show_build_menu = not self.show_build_menu
                     self.arrow_tower_button.update_label(new_cost=10 + (5 * self.arrow_towers.n_towers()))

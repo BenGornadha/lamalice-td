@@ -14,11 +14,38 @@ class BuildButton:
     def update_label(self, new_cost : int):
         self.label = f"Arrow Tower ({new_cost} coins)"
 
+    # def draw(self):
+    #     pygame.draw.rect(self.screen, self.color, self.rect)
+    #     text_surface = self.font.render(self.label, True, self.text_color)
+    #     text_rect = text_surface.get_rect(center=(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2))
+    #     self.screen.blit(text_surface, text_rect)
+
     def draw(self):
-        pygame.draw.rect(self.screen, self.color, self.rect)
+        # Définition des couleurs et des dimensions pour l'ombre
+        shadow_color = (0, 0, 0, 50)  # Noir avec une transparence
+        shadow_offset = 3  # Décalage de l'ombre en pixels
+
+        # Dessiner l'ombre du bouton
+        shadow_rect = pygame.Rect(self.rect.x + shadow_offset, self.rect.y + shadow_offset, self.rect.width,
+                                  self.rect.height)
+        pygame.draw.rect(self.screen, shadow_color, shadow_rect)
+
+        # Dessiner le rectangle principal du bouton avec un effet de gradient
+        self.draw_gradient_rect(self.rect, (30, 144, 255), (173, 216, 230))  # Bleu dégradé
+
+        # Dessiner le texte centré
         text_surface = self.font.render(self.label, True, self.text_color)
-        text_rect = text_surface.get_rect(center=(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2))
+        text_rect = text_surface.get_rect(
+            center=(self.rect.x + self.rect.width / 2, self.rect.y + self.rect.height / 2))
         self.screen.blit(text_surface, text_rect)
+
+    def draw_gradient_rect(self, rect, color_start, color_end):
+        """ Dessine un rectangle avec un effet de gradient vertical. """
+        height = rect.height
+        for i in range(height):
+            r, g, b = [x + (y - x) * i / height for x, y in zip(color_start, color_end)]
+            pygame.draw.line(self.screen, (int(r), int(g), int(b)), (rect.x, rect.y + i),
+                             (rect.x + rect.width, rect.y + i))
 
     def is_clicked(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:

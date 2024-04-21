@@ -30,7 +30,7 @@ class Waves:
                             num_enemies=previous_wave.num_enemies + 2, vitesse=previous_wave.speed * 2, spawn_timelapse=previous_wave.spawn_timelapse *0.9)
             else:
                 wave = Wave(goblin_factory=self.goblins_factory, hp=previous_wave.hp * 1.1,
-                            num_enemies=previous_wave.num_enemies + 1, vitesse=previous_wave.speed)
+                            num_enemies=previous_wave.num_enemies + 1, vitesse=previous_wave.speed,spawn_timelapse=previous_wave.spawn_timelapse *0.9)
             self.register_wave(wave=wave)
             previous_wave = wave
 
