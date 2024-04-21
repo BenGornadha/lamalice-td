@@ -27,7 +27,7 @@ class Waves:
         for i in range(1, 100):
             if i % 5 == 0:
                 wave = Wave(goblin_factory=self.goblins_factory, hp=previous_wave.hp * 1.1,
-                            num_enemies=previous_wave.num_enemies + 3, vitesse=previous_wave.speed * 2, spawn_timelapse=previous_wave.spawn_timelapse *0.9)
+                            num_enemies=previous_wave.num_enemies + 2, vitesse=previous_wave.speed * 2, spawn_timelapse=previous_wave.spawn_timelapse *0.9)
             else:
                 wave = Wave(goblin_factory=self.goblins_factory, hp=previous_wave.hp * 1.1,
                             num_enemies=previous_wave.num_enemies + 1, vitesse=previous_wave.speed)

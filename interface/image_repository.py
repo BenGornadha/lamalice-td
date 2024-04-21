@@ -3,8 +3,6 @@ from __future__ import annotations
 import pygame
 from pygame import Surface, Rect
 
-from interface.window import Window
-
 
 class ImageRepository:
 
@@ -20,6 +18,7 @@ class ImageRepository:
         self._register_tower()
         self._register_arrow()
         self._register_preview_tower()
+        self._register_tower_2()
 
     def surface(self, name: str) -> Surface:
         return self._surfaces[name]
@@ -53,3 +52,7 @@ class ImageRepository:
     def _register_mob(self):
         mob_image = pygame.image.load("./images/goblin.png")
         self._surfaces["mob"] = pygame.transform.scale(mob_image, (20, 25))
+
+    def _register_tower_2(self):
+        tower_image2 = pygame.image.load('./images/tourlvl2.png').convert_alpha()
+        self._surfaces["tower2"] = pygame.transform.scale(tower_image2, (40, 60))

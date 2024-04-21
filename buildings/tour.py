@@ -1,4 +1,7 @@
+from __future__ import annotations
 from typing import List
+
+import pygame
 
 from attacks.arrow import Arrow
 from buildings.building import Building
@@ -12,6 +15,10 @@ class Tours:
         self._image = image
         self._arrow_image = arrow_image
         self._tours = []
+
+    @property
+    def towers(self) -> List[Tour]:
+        return self._tours
 
     def n_towers(self):
         return len(self._tours)
@@ -44,6 +51,26 @@ class Tour(Building):
         self._last_attack_time = 0
         self._attack_cooldown = 500
         self.arrow = Arrow(screen=screen, image=arrow_image)
+        self.font = pygame.font.Font(None, 24)  # Définir la police ici
+        self.show_level_up = False  # Un indicateur pour afficher l'option de mise à niveau
+
+    def is_clicked(self, mouse_pos):
+        rect = pygame.Rect(self._position[0], self._position[1], self._image.get_width(), self._image.get_height())
+        if rect.collidepoint(mouse_pos):
+            self.show_level_up = not self.show_level_up  # Basculer l'affichage de l'option de mise à niveau
+            return True
+        return False
+
+    def draw_level_up_option(self):
+        if self.show_level_up:
+            text = "Level up for 20 coins"
+            label = self.font.render(text, True, (255, 255, 255))
+            label_rect = label.get_rect(center=(self._position[0] + 50, self._position[1] - 20))  # Position ajustée
+            self.level_up_rect = label.get_rect(center=(self._position[0] + 50, self._position[1] - 20))
+
+            pygame.draw.rect(self._screen, (0, 0, 0),
+                             label_rect.inflate(10, 5))  # Dessine un rectangle noir autour du texte
+            self._screen.blit(label, label_rect)
 
     def attack(self, current_time: int, ennemis: List[Goblin]) -> None:
         self._current_arrow(current_time=current_time)
@@ -53,6 +80,11 @@ class Tour(Building):
         if target is None:
             return
         self._launch_new_arrow(current_time=current_time, to=target)
+
+    def lvp_up(self, new_image):
+        self._damage = self._damage * 2
+        self._attack_cooldown = self._attack_cooldown * 0.8
+        self._image = new_image
 
     def _current_arrow(self, current_time: int):
         if self.arrow.is_already_launch():
@@ -85,3 +117,4 @@ class Tour(Building):
         self._screen.blit(self._image, self._position)
         if self.arrow.position is not None:
             self.arrow.draw()
+            self.draw_level_up_option()

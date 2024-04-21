@@ -35,7 +35,7 @@ class App:
                                   image=self._image_repository.surface("tower"),
                                   arrow_image=self._image_repository.surface("arrow"))
         self._waves = Waves(screen=self.screen,image_repository=self._image_repository)
-
+        self.draw_lvl_up_menu = False
 
         self._build_button = BuildButton(
             screen=self.screen,
@@ -86,17 +86,21 @@ class App:
         self._background.draw()
         self._build_button.draw()
         Player.display_current_money()
+        Player.display_current_lives()
         if self.show_preview_tower:
             self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
 
     def _draw_when_game_has_started(self):
         self._announcer.display_wave_info(wave_number=self._waves.current_index)
         Player.display_current_money()
+        Player.display_current_lives()
         self._build_button.draw()
         self._waves.draw_ennemies()
         self.arrow_towers.draw()
         if self.show_preview_tower:
             self.draw_preview_tower(mouse_position=pygame.mouse.get_pos())
+        if self.draw_lvl_up_menu:
+            self.current_tower_selected.draw_level_up_option()
 
     def draw_preview_tower(self, mouse_position: Tuple[int, int]):
         self.screen.blit(self._image_repository.surface("preview_tower"), mouse_position)
@@ -107,6 +111,20 @@ class App:
             if event.type == pygame.QUIT:
                 self._running = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for a_tower in self.arrow_towers.towers:
+                    if a_tower.is_clicked(mouse_pos=pygame.mouse.get_pos()):
+                        self.draw_lvl_up_menu = not self.draw_lvl_up_menu
+                        if self.draw_lvl_up_menu:
+                            self.current_tower_selected = a_tower
+                        else:
+                            self.current_tower_selected = False
+                        a_tower.draw_level_up_option()
+                if self.draw_lvl_up_menu:
+                    if self.current_tower_selected.level_up_rect.collidepoint(event.pos):
+                        if Player.can_buy(amount=20):
+                            Player.spend_gold(20)
+                            self.current_tower_selected.lvp_up(new_image=self._image_repository.surface("tower2"))
+
                 if self._build_button.is_clicked(event):
                     self.show_build_menu = not self.show_build_menu
                     self.arrow_tower_button.update_label(new_cost=10 + (5 * self.arrow_towers.n_towers()))

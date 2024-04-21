@@ -6,6 +6,7 @@ class Player:
     gold = 50
     font = pygame.font.SysFont('Arial', 24)
     screen = None
+    hearts = 20
 
     @classmethod
     def set_screen(cls, screen: Surface):
@@ -27,3 +28,8 @@ class Player:
     def display_current_money(cls):
         wave_text = cls.font.render(f'Coins: {cls.gold}', True, (255, 255, 255))
         cls.screen.blit(wave_text, (cls.screen.get_width() - wave_text.get_width() - 10, 30))
+
+    @classmethod
+    def display_current_lives(cls):
+        wave_text = cls.font.render(f'Hearts: {cls.hearts}', True, (255, 255, 255))
+        cls.screen.blit(wave_text, (cls.screen.get_width() - wave_text.get_width() - 10, 50))

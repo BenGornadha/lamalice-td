@@ -2,6 +2,7 @@ import pygame
 from pygame import Surface
 
 from paths.chemin import Chemin
+from player import Player
 
 
 class Goblin:
@@ -29,6 +30,7 @@ class Goblin:
         self._position_index += self._vitesse
         if self._position_index >= len(self._chemin):
             self._position_index = 0  # Remet l'ennemi au début du chemin
+            Player.hearts -= 1
 
         self._position = self._chemin[self._position_index]
 
