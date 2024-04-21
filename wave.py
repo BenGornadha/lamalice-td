@@ -15,29 +15,20 @@ class AnnounceNewWave:
 
 class Waves:
 
-    def __init__(self, screen : Surface, image_repository: ImageRepository):
+    def __init__(self, screen: Surface, image_repository: ImageRepository):
         self._waves: List[Wave] = []
-        self._current_wave: Wave | None = None
-        self._current_index = 0
         self.goblins_factory = GoblinFactory(screen=screen, image=image_repository.surface("mob"))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=4, num_enemies=10))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=5, num_enemies=7))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=6, num_enemies=7))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=7, num_enemies=7))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=8, num_enemies=7))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=10, num_enemies=7))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=12, num_enemies=7))
-        self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=15, num_enemies=7))
+        self._current_index = 0
+        self._current_wave: Wave = Wave(self.goblins_factory, num_enemies=5)
+        self._register_waves()
 
-    def a(self):
-        for i in range(1,100):
-            if i % 5 == 0:
-                self.register_wave(
-                    wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=self.current_wave.enemy_hp * 1.4,
-                              num_enemies=10, vitesse=5))
-
-            self.register_wave(wave=Wave(goblin_factory=self.goblins_factory, enemy_hp=self.current_wave.enemy_hp*1.4, num_enemies=7))
-
+    def _register_waves(self):
+        previous_wave = self.current_wave
+        for i in range(1, 100):
+            wave = Wave(goblin_factory=self.goblins_factory, enemy_hp=previous_wave.enemy_hp * 1.4,
+                        num_enemies=previous_wave.num_enemies + 1, vitesse=previous_wave.vitesse * 2)
+            self.register_wave(wave=wave)
+            previous_wave = wave
 
     @property
     def current_wave(self) -> Wave:
@@ -80,14 +71,13 @@ class Waves:
                 return AnnounceNewWave()
             return
 
-
     def increment_wave(self):
         self._current_index += 1
         self._current_wave = self._waves[self._current_index]
 
 
 class Wave:
-    def __init__(self, goblin_factory: GoblinFactory, enemy_hp: float = 2, num_enemies=30, vitesse = 1):
+    def __init__(self, goblin_factory: GoblinFactory, enemy_hp: float = 2, num_enemies=30, vitesse=1):
         self.goblin_factory = goblin_factory
         self.enemy_hp = enemy_hp
         self.num_enemies = num_enemies

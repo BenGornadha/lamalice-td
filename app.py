@@ -113,9 +113,9 @@ class App:
                     self.show_preview_tower = True
                 elif self.show_preview_tower:
                     nb_tour = self.arrow_towers.n_towers()
-                    self.arrow_tower_button.update_label(new_cost=10 + (5 * nb_tour))
-                    if Player.can_buy(amount=10 + (5 * nb_tour)):
-                        Player.spend_gold(amount=10 + (5 * nb_tour))
+                    self.arrow_tower_button.update_label(new_cost=10 + (5 * nb_tour +1 ))
+                    if Player.can_buy(amount=10 + (5 * nb_tour + 1)):
+                        Player.spend_gold(amount=10 + (5 * nb_tour + 1))
                         self.build_tour_at(pygame.mouse.get_pos())
                     self.game_started = True
                     self.show_build_menu = False
